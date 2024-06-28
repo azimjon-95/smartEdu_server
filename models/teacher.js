@@ -83,6 +83,9 @@ const teacherSchema = new Schema({
     password: {
         type: String,
         required: true
+    },
+    teachersId: {
+        type: String
     }
 }, {
     timestamps: true
@@ -113,5 +116,7 @@ const Teacher = mongoose.model('Teacher', teacherSchema);
 
 // Teacher modelini eksport qilish
 module.exports = Teacher;
+
+
 
 

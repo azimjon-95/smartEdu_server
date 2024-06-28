@@ -45,17 +45,20 @@ exports.updateTeacher = async (req, res) => {
     }
 };
 
-// Ustozni o'chirish
 exports.deleteTeacher = async (req, res) => {
+    const { id } = req.params;
+    console.log(id);
     try {
-        const deletedTeacher = await Teacher.findByIdAndDelete(req.params.id);
-        if (!deletedTeacher) return res.status(404).json({ message: 'Ustoz topilmadi' });
+        const deletedTeacher = await Teacher.findByIdAndDelete({ _id: id });
+        console.log(deletedTeacher);
+        if (!deletedTeacher) {
+            return res.status(404).json({ message: 'Ustoz topilmadi' });
+        }
         res.json({ message: 'Ustoz o\'chirildi' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
-
 // SignIn (kirish) funksiyasi
 exports.signIn = async (req, res) => {
     try {
