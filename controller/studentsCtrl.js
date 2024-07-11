@@ -1,32 +1,44 @@
 const Student = require('../models/student'); // Adjust the path as per your structure
 
 // READ
-exports.getStudent = (req, res) => {
-    Student.find()
-        .then(students => res.json(students))
-        .catch(err => res.status(400).json('Error: ' + err));
+const getStudent = async (req, res) => {
+    try {
+        const student = await Student.find();
+        res.status(200).json(student);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
 // CREATE
-exports.createStudent = (req, res) => {
-    const newStudent = new Student(req.body);
-
-    newStudent.save()
-        .then(() => res.send('Student added successfully'))
-        .catch(err => res.status(400).json('Error: ' + err));
+const createStudent = async (req, res) => {
+    try {
+        const newRegistration = new Student(req.body);
+        await newRegistration.save();
+        console.log(newRegistration);
+        res.status(201).json(newRegistration);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
 };
 
 // UPDATE
-exports.updateStudent = (req, res) => {
+const updateStudent = (req, res) => {
     Student.findByIdAndUpdate(req.params.id, req.body, { new: true })
         .then(() => res.send('Student updated successfully'))
         .catch(err => res.status(400).json('Error: ' + err));
 };
 
 // DELETE
-exports.deleteStudent = (req, res) => {
+const deleteStudent = (req, res) => {
     Student.findByIdAndDelete(req.params.id)
         .then(() => res.send('Student deleted successfully'))
         .catch(err => res.status(400).json('Error: ' + err));
 };
 
+module.exports = {
+    deleteStudent,
+    updateStudent,
+    createStudent,
+    getStudent
+}

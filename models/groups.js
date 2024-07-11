@@ -2,13 +2,16 @@ const mongoose = require('mongoose');
 
 const RegistrGrupsationSchema = new mongoose.Schema({
     roomNumber: { type: String, required: true },
-    roomCapacity: { type: Array },
+    studentsLength: { type: Number, default: 0 },
     lessonTime: { type: String, required: true },
     subjects: { type: [String], required: true },
     teachers: { type: [String], required: true },
     state: { type: String, required: true },
     schedule: { type: String },
+    teacherId: { type: String },
 });
 
 const Groups = mongoose.model('RegistrationGrups', RegistrGrupsationSchema);
 module.exports = Groups;
+
+
