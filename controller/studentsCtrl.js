@@ -15,7 +15,6 @@ const createStudent = async (req, res) => {
     try {
         const newRegistration = new Student(req.body);
         await newRegistration.save();
-        console.log(newRegistration);
         res.status(201).json(newRegistration);
     } catch (error) {
         res.status(400).json({ message: error.message });

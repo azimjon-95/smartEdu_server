@@ -33,17 +33,17 @@ exports.getRegistration = async (req, res) => {
     }
 };
 
-// Update a registration
 exports.updateRegistration = async (req, res) => {
+    console.log(req.params.id);
     try {
         const registration = await Groups.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        console.log(registration);
         if (!registration) return res.status(404).json({ message: 'Registration not found' });
         res.status(200).json(registration);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 };
-
 // Delete a registration
 exports.deleteRegistration = async (req, res) => {
     try {
