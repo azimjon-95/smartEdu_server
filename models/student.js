@@ -17,6 +17,7 @@ const studentSchema = new mongoose.Schema({
     gender: { type: String, enum: ['male', 'female'], required: true },
     subject: { type: String },
     state: { type: String, default: "new" },
+    coin: { type: Number, default: 0 },
     indebtedness: {
         debtorDate: { type: String },
         debtorPay: { type: Number, default: 0 },
