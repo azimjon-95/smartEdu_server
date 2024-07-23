@@ -1,17 +1,12 @@
 const PayStudentStory = require('../models/payStudentStory');
 const Student = require('../models/student');
+const Balans = require('../models/balans');
 
-exports.createPayment = async (req, res) => {
+const createPayment = async (req, res) => {
+    console.log(req.body);
     try {
-        const { studentId, studentFees, studentFeesDate, studentFeesTime, month, subject } = req.body;
-        const newPayment = new PayStudentStory({
-            studentId,
-            studentFees,
-            studentFeesDate,
-            studentFeesTime,
-            month,
-            subject,
-        });
+        const { studentId, studentFees } = req.body;
+        const newPayment = new PayStudentStory(req.body);
 
         await newPayment.save();
 
@@ -21,13 +16,27 @@ exports.createPayment = async (req, res) => {
             await student.save();
         }
 
+        // Balans yangilash
+        const balansList = await Balans.find();
+        if (balansList.length > 0) {
+            const balans = balansList[0];
+            balans.balans = (parseFloat(balans.balans) + parseFloat(studentFees)).toString();
+            await balans.save();
+        } else {
+            const newBalans = new Balans({
+                eduId: studentId,
+                balans: studentFees.toString(),
+            });
+            await newBalans.save();
+        }
+
         res.status(201).json(newPayment);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 };
 
-exports.getPayments = async (req, res) => {
+const getPayments = async (req, res) => {
     try {
         const payments = await PayStudentStory.find();
         res.status(200).json(payments);
@@ -36,7 +45,7 @@ exports.getPayments = async (req, res) => {
     }
 };
 
-exports.getPaymentById = async (req, res) => {
+const getPaymentById = async (req, res) => {
     try {
         const payment = await PayStudentStory.findById(req.params.id);
         if (!payment) return res.status(404).json({ message: 'Payment not found' });
@@ -46,7 +55,7 @@ exports.getPaymentById = async (req, res) => {
     }
 };
 
-exports.updatePayment = async (req, res) => {
+const updatePayment = async (req, res) => {
     try {
         const payment = await PayStudentStory.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!payment) return res.status(404).json({ message: 'Payment not found' });
@@ -56,7 +65,7 @@ exports.updatePayment = async (req, res) => {
     }
 };
 
-exports.deletePayment = async (req, res) => {
+const deletePayment = async (req, res) => {
     try {
         const payment = await PayStudentStory.findByIdAndDelete(req.params.id);
         if (!payment) return res.status(404).json({ message: 'Payment not found' });
@@ -64,4 +73,12 @@ exports.deletePayment = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
+};
+
+module.exports = {
+    createPayment,
+    getPayments,
+    getPaymentById,
+    updatePayment,
+    deletePayment
 };

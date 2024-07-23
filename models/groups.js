@@ -4,7 +4,7 @@ const RegistrGrupsationSchema = new mongoose.Schema({
     roomNumber: { type: String, required: true },
     studentsLength: { type: Number, default: 0 },
     lessonTime: { type: String, required: true },
-    subjects: { type: [String], required: true },
+    subjects: { type: String, required: true },
     teachers: { type: [String], required: true },
     state: { type: String, required: true },
     schedule: { type: String },

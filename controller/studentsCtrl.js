@@ -22,10 +22,13 @@ const createStudent = async (req, res) => {
 };
 
 // UPDATE
-const updateStudent = (req, res) => {
-    Student.findByIdAndUpdate(req.params.id, req.body, { new: true })
-        .then(() => res.send('Student updated successfully'))
-        .catch(err => res.status(400).json('Error: ' + err));
+const updateStudent = async (req, res) => {
+    let result = await Student.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    if (!result) {
+        return res.status(404).send("Student not found")
+    }
+    res.status(200).json(result)
+
 };
 
 // DELETE
@@ -35,9 +38,20 @@ const deleteStudent = (req, res) => {
         .catch(err => res.status(400).json('Error: ' + err));
 };
 
+const updateStudentState = async (req, res) => {
+    const { groupId } = req.params;
+    console.log(groupId);
+    try {
+        await Student.updateMany({ groupId: groupId }, { state: 'active' });
+        res.status(200).send('Students updated successfully');
+    } catch (error) {
+        res.status(500).send('Error updating students');
+    }
+};
 module.exports = {
     deleteStudent,
     updateStudent,
     createStudent,
-    getStudent
+    getStudent,
+    updateStudentState
 }

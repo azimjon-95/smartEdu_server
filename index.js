@@ -5,6 +5,7 @@ const groups = require('./routes/groups');
 const teacher = require('./routes/teacher');
 const attendanceRoutes = require('./routes/davomatRoures');
 const payStudentStoryRoutes = require('./routes/payStudentStoryRoutes');
+const balansRoutes = require('./routes/balansRoutes');
 require('./cronJob'); // Cron jobni yuklaymiz
 
 const mongoose = require('mongoose');
@@ -32,9 +33,11 @@ app.get('/', (req, res) => {
 app.use("/api", students);
 app.use("/api", groups);
 app.use("/api", teacher);
+app.use('/balans', balansRoutes);
 app.use('/api/attendances', attendanceRoutes);
 // Talabalar to'lov marshrutlari
 app.use('/api/payments', payStudentStoryRoutes);
+
 
 const PORT = process.env.PORT || 5000;
 
