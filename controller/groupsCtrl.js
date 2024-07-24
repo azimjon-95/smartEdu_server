@@ -34,10 +34,8 @@ exports.getRegistration = async (req, res) => {
 };
 
 exports.updateRegistration = async (req, res) => {
-    console.log(req.params.id);
     try {
         const registration = await Groups.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        console.log(registration);
         if (!registration) return res.status(404).json({ message: 'Registration not found' });
         res.status(200).json(registration);
     } catch (error) {

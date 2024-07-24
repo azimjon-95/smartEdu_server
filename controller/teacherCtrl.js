@@ -1,5 +1,5 @@
 const Teacher = require('../models/teacher'); // Teacher modelini import qilish
-const bcrypt = require('bcrypt'); // Parolni tekshirish uchun bcrypt kutubxonasini import qilish
+const jwt = require('jsonwebtoken');
 
 // Barcha ustozlarni olish
 exports.getAllTeachers = async (req, res) => {
@@ -26,7 +26,6 @@ exports.getTeacherById = async (req, res) => {
 exports.createTeacher = async (req, res) => {
     const teacher = new Teacher(req.body);
     try {
-        console.log(teacher);
         const newTeacher = await teacher.save();
         res.status(201).json(newTeacher);
     } catch (err) {
@@ -60,20 +59,24 @@ exports.deleteTeacher = async (req, res) => {
     }
 };
 // SignIn (kirish) funksiyasi
+const secretKey = process.env.JWT_SECRET_KEY; // .env fayldan maxfiy kalitni o'qish
+
 exports.signIn = async (req, res) => {
     try {
         const { username, password } = req.body;
         const teacher = await Teacher.findOne({ username });
-        if (!teacher) {
+        if (!teacher && !password) {
             return res.status(400).json({ message: 'Foydalanuvchi nomi yoki parol xato' });
         }
 
-        const isMatch = await teacher.comparePassword(password);
-        if (!isMatch) {
-            return res.status(400).json({ message: 'Foydalanuvchi nomi yoki parol xato' });
-        }
+        // Token yaratish
+        const token = jwt.sign({ id: teacher._id }, secretKey, { expiresIn: '30d' });
 
-        res.json({ message: 'Muvaffaqiyatli kirish' });
+        res.json({
+            message: 'Muvaffaqiyatli kirish',
+            token,
+            teacher
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

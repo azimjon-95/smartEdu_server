@@ -40,14 +40,21 @@ const deleteStudent = (req, res) => {
 
 const updateStudentState = async (req, res) => {
     const { groupId } = req.params;
-    console.log(groupId);
     try {
-        await Student.updateMany({ groupId: groupId }, { state: 'active' });
+        await Student.updateMany({ groupId: groupId }, req.body);
         res.status(200).send('Students updated successfully');
     } catch (error) {
+        console.error(error);
         res.status(500).send('Error updating students');
     }
 };
+
+
+
+
+
+
+
 module.exports = {
     deleteStudent,
     updateStudent,

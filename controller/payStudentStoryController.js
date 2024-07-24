@@ -3,7 +3,6 @@ const Student = require('../models/student');
 const Balans = require('../models/balans');
 
 const createPayment = async (req, res) => {
-    console.log(req.body);
     try {
         const { studentId, studentFees } = req.body;
         const newPayment = new PayStudentStory(req.body);

@@ -86,30 +86,14 @@ const teacherSchema = new Schema({
     },
     teachersId: {
         type: String
+    },
+    teacherType: {
+        type: String
     }
 }, {
     timestamps: true
 });
 
-// Saqlashdan oldin parolni hashlash
-teacherSchema.pre('save', async function (next) {
-    if (this.isModified('password') || this.isNew) {
-        try {
-            const salt = await bcrypt.genSalt(10);
-            this.password = await bcrypt.hash(this.password, salt);
-            next();
-        } catch (err) {
-            next(err);
-        }
-    } else {
-        next();
-    }
-});
-
-// Parolni tekshirish metodi
-teacherSchema.methods.comparePassword = async function (candidatePassword) {
-    return await bcrypt.compare(candidatePassword, this.password);
-};
 
 // Teacher modelini yaratish
 const Teacher = mongoose.model('Teacher', teacherSchema);

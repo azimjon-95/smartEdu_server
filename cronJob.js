@@ -3,10 +3,8 @@ const updateIndebtedness = require('./service/paymentService');
 const checkMonthlyUpdate = () => {
     const today = new Date();
     console.log(today.getDate());
-    if (today.getDate() === 1 || today.getDate() === 2 || today.getDate() === 3) {
+    if (today.getDate() === 23 || today.getDate() === 2 || today.getDate() === 3) {
         updateIndebtedness();
-
-        console.log("ok");
     }
 };
 // Hozirgi vaqtdan ertaga 00:00 ga qadar bo'lgan vaqtni hisoblash
