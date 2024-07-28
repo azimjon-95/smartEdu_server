@@ -1,9 +1,6 @@
 const Student = require("../models/student"); // Adjust the path as per your structure
 // const studentAttendance = require("../models/studentAttendance");
-let moment = require("moment");
 const Groups = require("../models/groups");
-
-let month = moment().format("MM");
 
 // READ
 const getStudent = async (req, res) => {
@@ -86,45 +83,54 @@ let data = [
   },
 ];
 
-// const getDebtorStudents = async (req, res) => {
-//   try {
-//     let groups = await Groups.find();
-//     let students = await Student.find({ state: "active" });
-
-//     let result = students.map((student) => {
-//       let monthlySum = groups.find((g) => g._id == student.groupId)?.mothlyPay;
-//       let debt = Math.round(
-//         monthlySum -
-//           data.filter(
-//             (s) => s.studentId == student._id && s.groupId == student.groupId
-//           ).length *
-//             (monthlySum / 13)
-//       );
-//       return { ...student._doc, debt };
-//     });
-
-//     res.send(result);
-//   } catch (error) {
-//     console.error(error);
-//     // res.status(500).json({ message: error.message });
-//   }
-// };
-
 const getDebtorStudents = async (req, res) => {
   try {
-    const groups = await Groups.find();
     const students = await Student.find({ state: "active" });
 
-    const monthlyPay = 500000; // 1 oy uchun to'lov
-    const classesPerMonth = 13; // 1 oyda 13 ta dars
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth(); // 0-based, yanvar = 0, fevral = 1, ...
+
+    // Oyni boshidan bugungacha o'tilgan darslar sonini hisoblash
+    const getLessonNumber = (startYear, startMonth, daysOfWeek) => {
+      const startDate = new Date(startYear, startMonth, 1);
+      const endDate = today;
+
+      let lessonCount = 0;
+
+      for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+        if (daysOfWeek.includes(d.getDay())) {
+          lessonCount++;
+        }
+      }
+      return lessonCount;
+    };
 
     let result = students.map((student) => {
-      let group = groups.find(
-        (g) => g._id.toString() === student.groupId.toString()
+      const monthlyPay = student.payForLesson; // 1 oy uchun to'lov
+
+      // bir oyda darslar soni
+      const classesPerMonth =
+        student.lessonDate === "evenDays"
+          ? 13
+          : student.lessonDate === "oddDays"
+          ? 13
+          : 26;
+
+      // Darslar qaysi kunlari o'tadi
+      const lessonDays =
+        student.lessonDate === "evenDays"
+          ? [2, 4, 6]
+          : student.lessonDate === "oddDays"
+          ? [1, 3, 5]
+          : [1, 2, 3, 4, 5, 6];
+
+      // bu oyni boshidan hozirgacha otilgan darslar soni
+      const lessonNumber = getLessonNumber(
+        currentYear,
+        currentMonth,
+        lessonDays
       );
-      if (!group) {
-        return { ...student._doc, debt: 0 }; // Agar guruh topilmasa, qarz 0 deb qabul qilinadi
-      }
 
       // Talaba uchun muzlatilgan kunlarni hisoblash
       let frozenDays = data.reduce((total, entry) => {
@@ -148,12 +154,21 @@ const getDebtorStudents = async (req, res) => {
         monthlyPay - classesMissed * (monthlyPay / classesPerMonth)
       );
 
-      return { ...student._doc, debt };
+      let month = (today.getMonth() + 1).toString().padStart(2, "0"); // Hozirgi oy
+      let updatedIndebtedness = {
+        ...student.indebtedness,
+        debtorPay:
+          month !== student.indebtedness.debtorDate.split("-")[1]
+            ? student.indebtedness.debtorPay + debt
+            : student.indebtedness.debtorPay -
+              (classesPerMonth - lessonNumber) * (monthlyPay / classesPerMonth),
+      };
+
+      return { ...student._doc, indebtedness: updatedIndebtedness };
     });
 
     res.send(result);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: error.message });
   }
 };
