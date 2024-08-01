@@ -18,10 +18,10 @@ const studentSchema = new mongoose.Schema({
     subject: { type: String },
     state: { type: String, default: "new" },
     coin: { type: Number, default: 0 },
+    eduId: { type: String },
     indebtedness: {
         debtorDate: { type: String },
         debtorPay: { type: Number, default: 0 },
-
     }
 });
 

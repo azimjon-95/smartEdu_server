@@ -44,12 +44,11 @@ exports.updateTeacher = async (req, res) => {
     }
 };
 
+// Ustozni o'chirish
 exports.deleteTeacher = async (req, res) => {
     const { id } = req.params;
-    console.log(id);
     try {
         const deletedTeacher = await Teacher.findByIdAndDelete({ _id: id });
-        console.log(deletedTeacher);
         if (!deletedTeacher) {
             return res.status(404).json({ message: 'Ustoz topilmadi' });
         }
@@ -58,14 +57,15 @@ exports.deleteTeacher = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
 // SignIn (kirish) funksiyasi
 const secretKey = process.env.JWT_SECRET_KEY; // .env fayldan maxfiy kalitni o'qish
 
 exports.signIn = async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { username } = req.body;
         const teacher = await Teacher.findOne({ username });
-        if (!teacher && !password) {
+        if (!teacher) {
             return res.status(400).json({ message: 'Foydalanuvchi nomi yoki parol xato' });
         }
 

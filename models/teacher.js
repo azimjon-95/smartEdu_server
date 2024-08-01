@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
 const { Schema } = mongoose;
 
 // Ustozlar uchun schema
@@ -89,18 +88,16 @@ const teacherSchema = new Schema({
     },
     teacherType: {
         type: String
-    }
+    },
+    eduId: { type: String },
 }, {
     timestamps: true
 });
-
 
 // Teacher modelini yaratish
 const Teacher = mongoose.model('Teacher', teacherSchema);
 
 // Teacher modelini eksport qilish
 module.exports = Teacher;
-
-
 
 

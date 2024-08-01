@@ -23,6 +23,7 @@ const createStudent = async (req, res) => {
 
 // UPDATE
 const updateStudent = async (req, res) => {
+    console.log(req);
     let result = await Student.findByIdAndUpdate(req.params.id, req.body, { new: true })
     if (!result) {
         return res.status(404).send("Student not found")

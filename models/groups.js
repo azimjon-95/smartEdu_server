@@ -10,6 +10,7 @@ const RegistrGrupsationSchema = new mongoose.Schema({
     schedule: { type: String },
     teacherId: { type: String },
     mothlyPay: { type: Number, required: true },
+    eduId: { type: String },
 });
 
 const Groups = mongoose.model('RegistrationGrups', RegistrGrupsationSchema);

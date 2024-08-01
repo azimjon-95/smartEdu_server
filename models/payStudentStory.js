@@ -8,6 +8,7 @@ const payStudentStorySchema = new mongoose.Schema({
     studentFeesTime: { type: String, default: new Date().toLocaleTimeString() }, // Student to'lov qilgan soat
     month: { type: String, default: new Date().toLocaleString('default', { month: 'long' }) }, // To'lov oy nomi
     subject: { type: [String] },
+    eduId: { type: String },
 });
 
 const PayStudentStory = mongoose.model('PayStudentStory', payStudentStorySchema);
